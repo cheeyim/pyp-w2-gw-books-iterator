@@ -4,16 +4,21 @@ from decimal import Decimal
 class Book(object):
     def __init__(self, title, authors, price_amount, price_currency):
         # initialize attributes
-        pass
+        self.title = title
+        self.authors = authors
+        self.price_amount = price_amount
+        self.price_currency = price_currency
 
     @property
     def price(self):
         # create an instance of `Price`, using the book's attributes
-        pass
+        return Price(self.price_amount, self.price_currency)
 
     def __str__(self):
         # check the string format in the unit tests
-        pass
+        # Harry Potter (by J. K. Rowling) - USD$20.00
+        return "{} (by {}) - {}${}".format(self.title, self.authors, 
+                    self.price_currency, self.price_amount)
 
 
 class Price(object):
@@ -33,24 +38,26 @@ class Price(object):
     }
 
     def __init__(self, amount, currency='USD'):
-        pass
+        self.amount = amount
+        self.currency = currency
 
     def __str__(self):
         pass
 
     def get_currency(self):
-        pass
+        return self.currency
 
     def __add__(self, other):
         # return a new `Price` instance, representing the sum of
         # both given ones
-        pass
+        price = self.amount + other.get_value(self.currency)
+        return Price(price, self.currency)
 
     def __eq__(self, other):
         # compare if two prices are equal. Keep in mind that both prices
         # might have different currencies. Use the `.get_value()` function
         # to transform prices to a comparable currency.
-        pass
+        return self.amount == other.get_value(self.currency)
 
     def __ne__(self, other):
         # opposite to __eq__
@@ -60,21 +67,27 @@ class Price(object):
         # if no currency is given, returns the current price amount. If a
         # different currency is given, handles the price convertion to the
         # given currency. Use the `EXCHANGE_RATES` dict for that.
-        pass
+        if currency and self.currency != currency:
+            rate = self.EXCHANGE_RATES[self.currency][currency]
+            return rate * self.amount
+
+        return self.amount
 
 
 class BookIterator(object):
     def __init__(self, file_path):
-        pass
+        self.file_path = file_path
+        self.books = read_file_line_by_line(self.file_path)
 
     def __iter__(self):
-        pass
+        for book in self.books:
+            yield Book(*book)
 
     def __next__(self):
         # make sure each execution of __next__ returns an instance
         # of the `Book` class.
         pass
-
+        
     next = __next__
 
 
